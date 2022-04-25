@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -j NP-squad
+#SBATCH -J NP-squad
 #SBATCH -o output/squad/%j.log
 #SBATCH -e output/squad/%j.err
 #SBATCH -p {partition}
