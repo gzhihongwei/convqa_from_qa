@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Datasets
+datasets/
+
+# Slurm output
+**/output/
+
+# Temporary script
+preprocess/preprocess_squad.sh
