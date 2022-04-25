@@ -1,0 +1,5 @@
+spacy
+benepar
+# torch
+# transformers
+tqdm 
