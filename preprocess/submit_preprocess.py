@@ -45,7 +45,11 @@ if __name__ == "__main__":
         template = f.read()
 
     filled_template = template.format(
-        partition=args.partition, time=args.time, cpus=args.cpus, memory=args.mem
+        partition=args.partition,
+        time=args.time,
+        cpus=args.cpus,
+        memory=args.mem,
+        file=args.file,
     )
 
     with open(preprocess_dir / "preprocess_squad.sh", "w") as f:
