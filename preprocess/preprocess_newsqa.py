@@ -17,7 +17,11 @@ def preprocess_newsqa(path: str) -> None:
     nlp.add_pipe("benepar", config={"model": "benepar_en3"})
 
     for datum in tqdm(newsqa["data"]):
-        context = nlp(datum["text"])
+        try:
+            context = nlp(datum["text"])
+        except ValueError:  # In case the context is too long
+            context = None
+
         for question in tqdm(datum["questions"], leave=False):
             if question["consensus"].get("badQuestion", False) or question[
                 "consensus"
@@ -25,6 +29,9 @@ def preprocess_newsqa(path: str) -> None:
                 continue
 
             try:
+                if context is None:
+                    raise benepar.NonConstituentException()
+
                 initial_node = context.char_span(
                     question["consensus"]["s"],
                     question["consensus"]["e"],
