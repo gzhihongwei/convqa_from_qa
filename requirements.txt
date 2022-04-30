@@ -1,5 +1,6 @@
-spacy
 benepar
-# torch
-# transformers
+datasets
+spacy
+torch --extra-index-url https://download.pytorch.org/whl/cu113
+transformers
 tqdm 
