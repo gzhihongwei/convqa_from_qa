@@ -43,9 +43,13 @@ def preprocess_qa_dataset(examples):
         sequence_ids = inputs.sequence_ids(i)
 
         # Find the start and end of the context
-        stringified_sequence_ids = "".join(sequence_ids)
-        context_start = stringified_sequence_ids.index("1")
-        context_end = stringified_sequence_ids.rindex("1")
+        idx = 0
+        while sequence_ids[idx] != 1:
+            idx += 1
+        context_start = idx
+        while sequence_ids[idx] == 1:
+            idx += 1
+        context_end = idx - 1
 
         # If the answer is not fully inside the context, label is (0, 0)
         if offset[context_start][0] > start_char or offset[context_end][1] < end_char:
