@@ -165,7 +165,7 @@ if __name__ == "__main__":
                     )
 
     if args.newsqa_path:
-        with open(args.squad_path, "r") as f:
+        with open(args.newsqa_path, "r") as f:
             newsqa = json.load(f)
 
         for datum in newsqa["data"]:
