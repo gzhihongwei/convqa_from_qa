@@ -226,7 +226,7 @@ if __name__ == "__main__":
         log_level="info",
         log_level_replica="warning",
         fp16=True,
-        dataloader_num_workers=3,
+        dataloader_num_workers=2,
     )
 
     trainer = Trainer(
