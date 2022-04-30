@@ -160,7 +160,8 @@ if __name__ == "__main__":
                         None
                         if qa["is_impossible"]
                         else dict(
-                            text=qa["expanded"], answer_start=qa["expanded_start"]
+                            text=qa["answers"][0]["expanded"],
+                            answer_start=qa["answers"][0]["expanded_start"],
                         )
                     )
 
