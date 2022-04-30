@@ -217,7 +217,7 @@ if __name__ == "__main__":
         lr_scheduler_type="linear",
         warmup_ratio=args.warmup_ratio,
         log_level="info",
-        log_level_replicas="warning",
+        log_level_replica="warning",
         fp16=True,
         dataloader_num_workers=3,
     )
