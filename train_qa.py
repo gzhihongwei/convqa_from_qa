@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 
 import pandas as pd
 
@@ -146,7 +147,9 @@ if __name__ == "__main__":
         args.squad_path is not None or args.newsqa_path is not None
     ), "At least one of SQuADv2 and NewsQAv1 need to be specified"
 
-    tokenizer = AutoTokenizer.from_pretrained("roberta-base")
+    tokenizer = AutoTokenizer.from_pretrained(
+        "roberta-base", cache_dir=os.environ["TMP"]
+    )
     questions = []
     contexts = []
     answers = []
@@ -200,7 +203,9 @@ if __name__ == "__main__":
         remove_columns=raw_train_dataset.column_names,
     )
 
-    model = AutoModelForQuestionAnswering.from_pretrained(args.model_name_or_path)
+    model = AutoModelForQuestionAnswering.from_pretrained(
+        args.model_name_or_path, cache_dir=os.environ["TMP"]
+    )
 
     training_args = TrainingArguments(
         args.output_dir,
