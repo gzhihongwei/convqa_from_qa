@@ -118,6 +118,12 @@ if __name__ == "__main__":
         "--batch_size", default=96, type=int, help="The batch size per GPU to use."
     )
     parser.add_argument(
+        "--gradient_accumulation_steps",
+        default=1,
+        type=int,
+        help="The number of steps to accumulate gradient updates before backward pass.",
+    )
+    parser.add_argument(
         "--learning_rate",
         default=3e-5,
         type=float,
@@ -211,6 +217,7 @@ if __name__ == "__main__":
         args.output_dir,
         evaluation_strategy="no",
         per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
         learning_rate=args.learning_rate,
         weight_decay=args.weight_decay,
         num_train_epochs=args.epochs,
