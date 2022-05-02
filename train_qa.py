@@ -228,6 +228,8 @@ if __name__ == "__main__":
         save_strategy="epoch",
         fp16=True,
         dataloader_num_workers=2,
+        report_to="wandb",
+        run_name=os.path.basename(args.output_dir),
     )
 
     trainer = Trainer(
