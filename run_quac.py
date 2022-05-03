@@ -370,16 +370,17 @@ if __name__ == "__main__":
     parser = HfArgumentParser((DataTrainingArguments, TrainingArguments))
     data_args, training_args = parser.parse_args_into_dataclasses()
 
+    tokenizer = AutoTokenizer.from_pretrained(
+        "roberta-base", cache_dir=os.environ["TMP"]
+    )
+    tokenizer.add_tokens("CANNOTANSWER")
+
     raw_datasets = load_dataset("quac")
     train_dataset = raw_datasets["train"].map(
         preprocess_training_examples,
         batched=True,
         remove_columns=raw_datasets["train"].column_names,
     )
-    tokenizer = AutoTokenizer.from_pretrained(
-        "roberta-base", cache_dir=os.environ["TMP"]
-    )
-    tokenizer.add_token("CANNOTANSWER")
 
     model = RobertaForQUAC.from_pretrained(data_args.model_name_or_path)
     model.resize_token_embeddings(len(tokenizer))
