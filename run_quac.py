@@ -29,7 +29,7 @@ class DataTrainingArguments:
         metadata={"help": "The model name or path to use for initializing the model."}
     )
 
-    context_size: str = field(
+    context_size: int = field(
         metadata={
             "help": "The number of previous QA dialogs to include when attempting to answer question i."
         }
