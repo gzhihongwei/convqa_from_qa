@@ -375,7 +375,7 @@ if __name__ == "__main__":
     )
     tokenizer.add_tokens("CANNOTANSWER")
 
-    raw_datasets = load_dataset("quac")
+    raw_datasets = load_dataset("quac", cache_dir=os.environ["TMP"])
     train_dataset = raw_datasets["train"].map(
         preprocess_training_examples,
         batched=True,
