@@ -194,6 +194,8 @@ def eval_quac(model, eval_dataset, tokenizer):
                     o if sequence_ids[k] == 1 else None for k, o in enumerate(offset)
                 ]
 
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+
             with torch.no_grad():
                 outputs = model(**inputs)
 
