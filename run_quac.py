@@ -97,7 +97,7 @@ class RobertaForQUAC(RobertaPreTrainedModel):
         start_logits = start_logits.squeeze(-1).contiguous()
         end_logits = end_logits.squeeze(-1).contiguous()
 
-        cls_token = sequence_output[0]
+        cls_token = sequence_output[:, 0]
 
         dialog_logits = self.dialog_head(cls_token)
         followup_logits, yesno_logits = dialog_logits.split(3, dim=-1)
@@ -164,11 +164,11 @@ def eval_quac(model, eval_dataset, tokenizer):
             )
 
             for i in range(start, q_num):
-                question.append(qas["question"][i])
+                question.append(qas[i]["question"])
                 question.append(prediction["best_span_str"][i])
 
-            question.append(qas["question"][q_num])
-            prediction["qid"].append(qas["id"][q_num])
+            question.append(qas[q_num]["question"])
+            prediction["qid"].append(qas[q_num]["id"])
 
             inputs = tokenizer(
                 " ".join(question),
@@ -340,7 +340,11 @@ def preprocess_training_examples(examples):
         context_end = idx - 1
 
         # If the answer is not fully inside the context, label is (0, 0)
-        if offset[context_start][0] > start_char or offset[context_end][1] < end_char:
+        if (
+            offset[context_start][0] > start_char
+            or offset[context_end][1] < end_char
+            or answer == "CANNOTANSWER"
+        ):
             start_positions.append(0)
             end_positions.append(0)
         else:
