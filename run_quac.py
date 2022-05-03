@@ -264,7 +264,7 @@ def eval_quac(model, eval_dataset, tokenizer):
         ):
             preds[dia_id][qid] = qspan, qyesno, qfollowup
 
-    return eval_fn()
+    return eval_fn(eval_dataset, preds, False)
 
 
 def preprocess_training_examples(examples):
