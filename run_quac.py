@@ -46,6 +46,10 @@ class DataTrainingArguments:
         default="", metadata={"help": "The path to the QuAC validation split JSON."}
     )
 
+    min_f1: Optional[float] = field(
+        default=0.4, metadata={"help": "Minimum F1 needed for evaluation."}
+    )
+
 
 class RobertaForQUAC(RobertaPreTrainedModel):
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
@@ -158,9 +162,7 @@ def eval_quac(model, eval_dataset, tokenizer):
         for q_num in tqdm(range(len(qas)), leave=False):
             question = []
             start = (
-                0
-                if data_args.context_size is None
-                else (max(0, q_num - data_args.context_size))
+                0 if args.context_size is None else (max(0, q_num - args.context_size))
             )
 
             for i in range(start, q_num):
@@ -173,9 +175,9 @@ def eval_quac(model, eval_dataset, tokenizer):
             inputs = tokenizer(
                 " ".join(question),
                 context,
-                max_length=data_args.max_seq_len,
+                max_length=args.max_seq_len,
                 truncation="only_second",
-                stride=data_args.stride,
+                stride=args.stride,
                 return_overflowing_tokens=True,
                 return_offsets_mapping=True,
                 padding="max_length",
@@ -183,7 +185,7 @@ def eval_quac(model, eval_dataset, tokenizer):
             )
 
             _ = inputs.pop("overflow_to_sample_mapping")
-            offset_mapping = inputs.pop("offest_mapping").cpu().numpy().tolist()
+            offset_mapping = inputs.pop("offset_mapping").cpu().numpy().tolist()
 
             for i in range(len(inputs["input_ids"])):
                 sequence_ids = inputs.sequence_ids(i)
@@ -285,9 +287,7 @@ def preprocess_training_examples(examples):
         for q_num in range(len(qs)):
             question = []
             start = (
-                0
-                if data_args.context_size is None
-                else (max(0, q_num - data_args.context_size))
+                0 if args.context_size is None else (max(0, q_num - args.context_size))
             )
 
             for i in range(start, q_num):
@@ -306,9 +306,9 @@ def preprocess_training_examples(examples):
     inputs = tokenizer(
         questions,
         contexts,
-        max_length=data_args.max_seq_len,
+        max_length=args.max_seq_len,
         truncation="only_second",
-        stride=data_args.stride,
+        stride=args.stride,
         return_overflowing_tokens=True,
         return_offsets_mapping=True,
         padding="max_length",
@@ -372,14 +372,14 @@ def preprocess_training_examples(examples):
 
 if __name__ == "__main__":
     parser = HfArgumentParser((DataTrainingArguments, TrainingArguments))
-    data_args, training_args = parser.parse_args_into_dataclasses()
+    args, training_args = parser.parse_args_into_dataclasses()
 
     tokenizer = AutoTokenizer.from_pretrained(
         "roberta-base", cache_dir=os.environ["TMP"]
     )
     tokenizer.add_tokens("CANNOTANSWER")
 
-    model = RobertaForQUAC.from_pretrained(data_args.model_name_or_path)
+    model = RobertaForQUAC.from_pretrained(args.model_name_or_path)
     model.resize_token_embeddings(len(tokenizer))
 
     if training_args.do_train:
@@ -400,7 +400,7 @@ if __name__ == "__main__":
         trainer.save_model()
 
     if training_args.do_eval:
-        with open(data_args.quac_val_path, "r") as f:
+        with open(args.quac_val_path, "r") as f:
             quac_val_dataset = json.load(f)["data"]
         metrics = eval_quac(model, quac_val_dataset, tokenizer)
         trainer = Trainer(model=model, args=training_args, tokenizer=tokenizer,)
