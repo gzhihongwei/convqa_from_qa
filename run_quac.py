@@ -379,24 +379,23 @@ if __name__ == "__main__":
     )
     tokenizer.add_tokens("CANNOTANSWER")
 
-    raw_datasets = load_dataset("quac", cache_dir=os.environ["TMP"])
-    train_dataset = raw_datasets["train"].map(
-        preprocess_training_examples,
-        batched=True,
-        remove_columns=raw_datasets["train"].column_names,
-    )
-
     model = RobertaForQUAC.from_pretrained(data_args.model_name_or_path)
     model.resize_token_embeddings(len(tokenizer))
 
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        tokenizer=tokenizer,
-    )
-
     if training_args.do_train:
+        raw_datasets = load_dataset("quac", cache_dir=os.environ["TMP"])
+        train_dataset = raw_datasets["train"].map(
+            preprocess_training_examples,
+            batched=True,
+            remove_columns=raw_datasets["train"].column_names,
+        )
+
+        trainer = Trainer(
+            model=model,
+            args=training_args,
+            train_dataset=train_dataset,
+            tokenizer=tokenizer,
+        )
         trainer.train()
         trainer.save_model()
 
@@ -404,5 +403,6 @@ if __name__ == "__main__":
         with open(data_args.quac_val_path, "r") as f:
             quac_val_dataset = json.load(f)["data"]
         metrics = eval_quac(model, quac_val_dataset, tokenizer)
+        trainer = Trainer(model=model, args=training_args, tokenizer=tokenizer,)
         trainer.log_metrics("val", metrics)
         trainer.save_metrics("val", metrics)
