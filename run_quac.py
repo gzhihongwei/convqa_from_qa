@@ -275,10 +275,13 @@ def preprocess_training_examples(examples):
     followups = []
     yesnos = []
 
-    for example in examples:
-        qs = example["questions"]
-        ans = example["orig_answers"]
-
+    for qs, ans, context, followup, yesno in zip(
+        examples["questions"],
+        examples["orig_answers"],
+        examples["context"],
+        examples["followups"],
+        examples["yesnos"],
+    ):
         for q_num in range(len(qs)):
             question = []
             start = (
@@ -294,11 +297,11 @@ def preprocess_training_examples(examples):
             question.append(qs[q_num])
 
             questions.append(" ".join(question))
-            contexts.append(example["context"])
+            contexts.append(context)
             answers.append(ans["texts"][q_num])
             answer_starts.append(ans["answer_starts"][q_num])
-            followups.append(example["followups"][q_num])
-            yesnos.append(example["yesnos"][q_num])
+            followups.append(followup[q_num])
+            yesnos.append(yesno[q_num])
 
     inputs = tokenizer(
         questions,
