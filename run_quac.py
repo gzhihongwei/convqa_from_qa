@@ -370,7 +370,7 @@ if __name__ == "__main__":
     raw_datasets = load_dataset("quac")
     train_dataset = raw_datasets["train"].map(
         preprocess_training_examples,
-        batch=True,
+        batched=True,
         remove_columns=raw_datasets["train"].column_names,
     )
     tokenizer = AutoTokenizer.from_pretrained(
