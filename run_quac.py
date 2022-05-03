@@ -36,18 +36,14 @@ class DataTrainingArguments:
     )
 
     max_seq_len: Optional[int] = field(
-        metadata={
-            "default": 386,
-            "help": "The maximum sequence length during tokenization.",
-        }
+        default=386,
+        metadata={"help": "The maximum sequence length during tokenization.",},
     )
 
-    stride: Optional[int] = field(
-        metadata={"default": 128, "help": "The context stride."}
-    )
+    stride: Optional[int] = field(default=128, metadata={"help": "The context stride."})
 
     quac_val_path: Optional[str] = field(
-        metadata={"default": "", "help": "The path to the QuAC validation split JSON."}
+        default="", metadata={"help": "The path to the QuAC validation split JSON."}
     )
 
 
