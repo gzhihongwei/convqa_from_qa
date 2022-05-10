@@ -127,7 +127,7 @@ def compute_span_overlap(pred_span, gt_span, text):
     return 'No overlap', fscore
 
 
-def eval_fn(val_results, model_results, verbose):
+def eval_fn(val_results, model_results, verbose, min_f1):
   span_overlap_stats = Counter()
   sentence_overlap = 0.
   para_overlap = 0.
@@ -162,7 +162,7 @@ def eval_fn(val_results, model_results, verbose):
             unanswerables.append(0.0)
           total_qs += 1
           unfiltered_f1s.append(0.0)
-          if hf1 >= args.min_f1:
+          if hf1 >= min_f1:
             human_f1.append(hf1)
           continue
 
@@ -175,7 +175,7 @@ def eval_fn(val_results, model_results, verbose):
         unfiltered_f1s.append(max_f1)
 
         # dont eval on low agreement instances
-        if hf1 < args.min_f1:
+        if hf1 < min_f1:
           continue
 
         human_f1.append(hf1)
@@ -246,7 +246,7 @@ if __name__ == "__main__":
       did = par['id']
       qa_list = par['qas']
       val_total += len(qa_list)
-  metric_json = eval_fn(val, preds, args.verbose)
+  metric_json = eval_fn(val, preds, args.verbose, min_f1)
   if args.o:
     with open(args.o, 'w') as fout:
       json.dump(metric_json, fout)

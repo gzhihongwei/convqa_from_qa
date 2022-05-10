@@ -46,10 +46,6 @@ class DataTrainingArguments:
         default="", metadata={"help": "The path to the QuAC validation split JSON."}
     )
 
-    min_f1: Optional[float] = field(
-        default=0.4, metadata={"help": "Minimum F1 needed for evaluation."}
-    )
-
 
 class RobertaForQUAC(RobertaPreTrainedModel):
     _keys_to_ignore_on_load_unexpected = [r"pooler"]
@@ -161,13 +157,13 @@ def eval_quac(model, eval_dataset, tokenizer):
 
         for q_num in tqdm(range(len(qas)), leave=False):
             question = []
-            start = (
-                0 if args.context_size is None else (max(0, q_num - args.context_size))
-            )
+            start = 0 if args.context_size is None else q_num - args.context_size
 
-            for i in range(start, q_num):
-                question.append(qas[i]["question"])
-                question.append(prediction["best_span_str"][i])
+            for prev_q, prev_a in zip(
+                qas[start:q_num], prediction["best_span_str"][start:q_num]
+            ):
+                question.append(prev_q["question"])
+                question.append(prev_a)
 
             question.append(qas[q_num]["question"])
             prediction["qid"].append(qas[q_num]["id"])
@@ -268,7 +264,7 @@ def eval_quac(model, eval_dataset, tokenizer):
         ):
             preds[dia_id][qid] = qspan, qyesno, qfollowup
 
-    return eval_fn(eval_dataset, preds, False)
+    return eval_fn(eval_dataset, preds, False, 0.4)
 
 
 def preprocess_training_examples(examples):
@@ -288,13 +284,11 @@ def preprocess_training_examples(examples):
     ):
         for q_num in range(len(qs)):
             question = []
-            start = (
-                0 if args.context_size is None else (max(0, q_num - args.context_size))
-            )
+            start = 0 if args.context_size is None else q_num - args.context_size
 
-            for i in range(start, q_num):
-                question.append(qs[i])
-                question.append(ans["texts"][i])
+            for prev_q, prev_a in zip(qs[start:q_num], ans["texts"][start:q_num]):
+                question.append(prev_q)
+                question.append(prev_a)
 
             question.append(qs[q_num])
 
