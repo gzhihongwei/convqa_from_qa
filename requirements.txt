@@ -1,6 +1,7 @@
 benepar
+gdown
 datasets
 spacy
-torch --extra-index-url https://download.pytorch.org/whl/cu113
+torch
 transformers
 tqdm 

@@ -131,8 +131,6 @@ dmypy.json
 # Datasets
 datasets/
 
-# Slurm output
-**/output/
+# NewsQA tar.gz
+newsqa.tar.gz
 
-# Temporary script
-preprocess/preprocess_squad.sh

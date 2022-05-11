@@ -225,6 +225,7 @@ if __name__ == "__main__":
         warmup_ratio=args.warmup_ratio,
         log_level="info",
         log_level_replica="warning",
+        logging_steps=10,
         save_strategy="epoch",
         fp16=True,
         dataloader_num_workers=2,
@@ -239,3 +240,4 @@ if __name__ == "__main__":
         tokenizer=tokenizer,
     )
     trainer.train()
+    trainer.save_model()
